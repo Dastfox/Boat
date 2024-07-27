@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0" />
+		<title>La Vraie Hydre - Gestion du Navire</title>
+		<link
+			rel="stylesheet"
+			href="style.css" />
+		<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+		<script src="script.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<h1>La Vraie Hydre - Gestion du Navire</h1>
+
+			<div class="section">
+				<h2>Informations sur l'équipage</h2>
+				<div class="crew-info">Canonniers disponibles : <span id="availableCannoneers">8</span></div>
+				<div class="crew-info">Canonniers assignés : <span id="assignedCannoneers">0</span></div>
+				<div class="crew-info">Marins : <span id="sailors">30</span></div>
+				<div class="crew-info">Équipage total : <span id="totalCrew">38</span></div>
+			</div>
+
+			<div class="section">
+				<h2>Actions de combat</h2>
+				<button onclick="nextTurn()">Tour suivant</button>
+			</div>
+
+			<div class="section">
+				<div>Charges de boulets Draconiques : <span id="draconicShellsCharges">6</span></div>
+				<button onclick="resetDraconicShells()">Réinitialiser les boulets Draconiques (Repos Long)</button>
+				<h2>Armes</h2>
+				<div id="weaponTypes"></div>
+			</div>
+
+			<div class="container">
+				<button onclick="toggleDetails()">Afficher/Cacher Détails du Navire</button>
+				<div
+					id="shipDetails"
+					class="container"
+					style="display: none">
+					<h1>Fiche de Personnage : Bateau</h1>
+					<h2>Nom du Navire : <strong>La vraie Hydre</strong></h2>
+					<p><strong>Type de Navire :</strong> Galion</p>
+					<p><strong>Taille :</strong> Grand</p>
+					<p><strong>Classe d'Armure (CA) :</strong> 18 (14 + modificateur de STR)</p>
+					<p><strong>Points de Vie (PV) :</strong> 600</p>
+					<p><strong>Vitesse :</strong> 5 nœuds (vent faible) / 10 nœuds (vent fort)</p>
+
+					<h2>Caractéristiques</h2>
+					<table>
+						<tr>
+							<th>Caractéristique</th>
+							<th>Valeur</th>
+							<th>Modificateur</th>
+						</tr>
+						<tr>
+							<td>Structure (STR)</td>
+							<td>18</td>
+							<td>+4</td>
+						</tr>
+						<tr>
+							<td>Manœuvrabilité (DEX)</td>
+							<td>12</td>
+							<td>+1 (+2 élémentaire d'eau)</td>
+						</tr>
+						<tr>
+							<td>Endurance (CON)</td>
+							<td>20</td>
+							<td>+5</td>
+						</tr>
+						<tr>
+							<td>Navigation (INT)</td>
+							<td>14</td>
+							<td>+2</td>
+						</tr>
+						<tr>
+							<td>Observation (WIS)</td>
+							<td>12</td>
+							<td>+1 (+2 élémentaire d'eau)</td>
+						</tr>
+						<tr>
+							<td>Présence (CHA)</td>
+							<td>16</td>
+							<td>+3</td>
+						</tr>
+					</table>
+
+					<h2>Capacités et Équipements</h2>
+					<h3>Équipage :</h3>
+					<ul>
+						<li><strong>Canonniers :</strong> 8 (Compétence: 14, modif: +2)</li>
+						<li><strong>Marins :</strong> 30</li>
+						<li><strong>Élémentaire d'Eau :</strong> 1</li>
+						<li><strong>Ingénieur magique :</strong> 1</li>
+					</ul>
+
+					<h3>Armement :</h3>
+					<ul>
+						<li><strong>Canons :</strong> 10 (5 de chaque côté, recharge en 3 tours)</li>
+						<li><strong>Caronades :</strong> 2 (1 de chaque côté, recharge en 2 tours)</li>
+						<li><strong>Arbalètes lourdes :</strong> 4 (2 à l'avant, 2 à l'arrière, recharge en 1 tour)</li>
+						<li>
+							<strong>Canons Magiques :</strong>
+							<ul>
+								<li><strong>Boulets Magiquement Explosifs :</strong> 2 (6d6 dégâts de feu dans un rayon de 10 pieds, recharge en 4 tours)</li>
+								<li><strong>Canon de Givre (à l'avant):</strong> 1 (4d8 dégâts de froid, crée une zone de glace de 20 pieds de diamètre sur l'eau, recharge en 3 tours)</li>
+							</ul>
+						</li>
+					</ul>
+
+					<h3>Cargaison :</h3>
+					<ul>
+						<li><strong>Capacité de Charge :</strong> 100 tonnes</li>
+						<li><strong>Provisions :</strong> 3 mois pour 40 personnes</li>
+						<li><strong>Eau Potable :</strong> 6 mois pour 40 personnes</li>
+						<li><strong>Trésor à Bord :</strong> 500 pièces d'or, diverses</li>
+					</ul>
+
+					<h2>Capacités Spéciales</h2>
+					<ul>
+						<li>
+							<strong>Élémentaire d'Eau :</strong>
+							<ul>
+								<li><strong>Hydros :</strong> +2 nœuds de vitesse pendant 3 tours (recharge avec un repos long)</li>
+								<li><strong>Éclaireur Aquatique :</strong> +2 aux jets d'Observation (passif)</li>
+								<li><strong>Aide à la Manœuvre :</strong> +2 aux jets de manœuvrabilité (passif)</li>
+							</ul>
+						</li>
+						<li><strong>Système de Défense :</strong> Filets anti-abordage (+2 CA contre les attaques d'abordage)</li>
+						<li><strong>Équipement de Réparation :</strong> Atelier de Réparation (permet de regagner 50 PV par jour de réparation)</li>
+						<li><strong>Atelier de l'Ingénieur :</strong> Permet de créer des munitions spéciales pour les canons</li>
+					</ul>
+
+					<h2>Modificateurs de Combat</h2>
+					<ul>
+						<li><strong>Canon :</strong> +4 au toucher, 4d12 dégâts perforants +2, recharge en 4 tours</li>
+						<li><strong>Caronade :</strong> +4 à l'attaque, 2d10 + 2 dégâts explosifs, recharge en 2 tours</li>
+						<li><strong>Arbalète Lourde :</strong> +4 à l'attaque, 1d6 + 2 dégâts perforants, recharge en 1 tour</li>
+						<li><strong>Canon de Givre :</strong> +4 à l'attaque, 4d8 + 2 dégâts de froid, crée une zone de glace de 20 pieds de diamètre sur l'eau, recharge en 3 tours</li>
+					</ul>
+
+					<h3>Munitions spéciales :</h3>
+					<ul>
+						<li><strong>Boulets Draconiquement Explosifs :</strong> ajoute 3d6 dégâts de feu (rayon de 10 pieds), doit être chargé dans un Canon (6 charges, repos long)</li>
+					</ul>
+
+					<h2>Capacités de Combat</h2>
+					<p><strong>Grappin :</strong> En cas de réussite d'une attaque sur un navire ennemi, permet de se déplacer contre la totalité de son déplacement dans le navire ennemi.</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
